@@ -83,7 +83,7 @@ const login = async () => {
     captcha: loginParams.value.captcha,
   });
   if (code === "000000") {
-    ElMessage.success("登陆成功啦~");
+    ElMessage.success("登录成功啦~");
     store.commit("setToken", data.token);
     store.commit("setUser", data);
   } else {

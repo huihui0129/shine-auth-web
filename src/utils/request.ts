@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {ElMessage} from "element-plus";
 
 const request = axios.create({
   baseURL: 'http://localhost:9000',  // 注意！！ 这里是全局统一加上了 后端接口前缀 前缀，后端必须进行跨域配置！
@@ -13,11 +14,11 @@ request.interceptors.request.use(config => {
   // 	config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
   // 	config.headers['Authorization'] = "Basic d2ViOndlYi1zZWNyZXQ=";
   // } else {
-  // 	let accessToken = localStorage.getItem("access_token") || undefined;
-  // 	if (accessToken) {
-  config.headers['Content-Type'] = 'application/json;charset=UTF-8';
-  // config.headers['Authorization'] = "bearer " + accessToken;  // 设置请求头
-  // }
+  	let accessToken = localStorage.getItem("token") || undefined;
+  	if (accessToken) {
+      config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+      config.headers['Authorization'] = "Bearer " + accessToken;  // 设置请求头
+    }
   // }
   // config.headers['token'] = user.token;  // 设置请求头
   // if (request.getUri() !== '/' && request.getUri() !== '/login' ) {
@@ -47,8 +48,14 @@ request.interceptors.response.use(
     return res;
   },
   error => {
-    console.log('err' + error) // for debug
-    return Promise.reject(error)
+    console.log("错误：" + error) // for debug
+    if (error.response) {
+      const { status, data } = error.response;
+      if (status === 401) {
+        ElMessage.error(data.message);
+      }
+    }
+    return Promise.reject({ error: true, message: error.message })
   }
 )
 
