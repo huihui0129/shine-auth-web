@@ -1,4 +1,4 @@
-# hh-system-web
+# shine-auth-web
 
-系统后台
+授权服务
 
