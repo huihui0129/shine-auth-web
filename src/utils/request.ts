@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {ElMessage} from "element-plus";
+import router from "@/router";
 
 const request = axios.create({
   baseURL: 'http://localhost:9000',  // 注意！！ 这里是全局统一加上了 后端接口前缀 前缀，后端必须进行跨域配置！
@@ -37,6 +38,9 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(
   response => {
     let res = response.data;
+    if (res.code !== "000000") {
+      ElMessage.error(res.message);
+    }
     // 如果是返回的文件
     if (response.config.responseType === 'blob') {
       return res
@@ -53,9 +57,10 @@ request.interceptors.response.use(
       const { status, data } = error.response;
       if (status === 401) {
         ElMessage.error(data.message);
+        router.push("/login");
       }
     }
-    return Promise.reject({ error: true, message: error.message })
+    return Promise.reject({ error: true, message: error.message, data: error.response })
   }
 )
 

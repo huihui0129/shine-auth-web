@@ -45,12 +45,12 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from "vue";
-import request from "@/utils/request";
+import {onMounted, ref} from "vue";
 import {ElMessage} from "element-plus";
 import {Result} from "@/types/Result";
 import { User, Lock, Picture } from "@element-plus/icons-vue";
 import {useStore} from "vuex";
+import {getCaptchaInfo, loginAuth} from "@/service/security/LoginController";
 
 const store = useStore();
 
@@ -67,7 +67,7 @@ onMounted(() => {
 });
 
 const getCaptcha = async () => {
-  const res: Result = await request.get("/user/auth/captcha/getCaptcha");
+  const res: Result = await getCaptchaInfo();
   if (res.code === "000000") {
     captcha.value = res.data;
   } else {
@@ -76,7 +76,7 @@ const getCaptcha = async () => {
 };
 
 const login = async () => {
-  const { code, data, message }: Result = await request.post("/user/auth/user/login", {
+  const { code, data, message }: Result = await loginAuth({
     username: loginParams.value.username,
     password: loginParams.value.password,
     uuid: captcha.value.uuid,
